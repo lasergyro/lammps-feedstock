@@ -1,0 +1,68 @@
+
+{% set build = 2 %}
+{% set name = "lammps" %}
+{% set version = "stable_29Oct2020" %}
+{% set sha256 = "759705e16c1fedd6aa6e07d028cc0c78d73c76b76736668420946a74050c3726" %}
+{% set date = datetime.datetime.strptime(version.split('_')[1], "%d%b%Y") %}
+{% set conda_version = "{:%Y.%m.%d}".format(date) %}
+
+package:
+  name: {{ name|lower }}
+  version: {{ conda_version }}
+
+source:
+  - fn: {{ name }}-{{ conda_version }}.tar.gz
+    url: https://github.com/lammps/lammps/archive/{{ version }}.tar.gz
+    sha256: {{ sha256 }}
+
+build:
+  number: {{ build }}
+  string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ build }}
+
+requirements:
+  build:
+    - {{ compiler('c') }}
+    - {{ compiler('cxx') }}
+    - cmake
+
+  host:
+    - python
+    - openmpi
+    - llvm-openmp
+    - libpng
+    - zlib
+    - libnetcdf
+  run:
+    - python
+    - openmpi
+    - mpi4py
+
+test:
+  imports:
+    - lammps
+  commands:
+    - python -c "from lammps import lammps; lmp=lammps();"
+    - lmp -help > help.txt
+    - mpiexec -n 1 lmp -help > help_mpi.txt
+
+about:
+  home: http://lammps.sandia.gov
+  license: GPL-2.0
+  license_family: GPL
+  license_file: 
+    - '{{ environ["RECIPE_DIR"] }}/LICENSE'
+    - '{{ environ["RECIPE_DIR"] }}/LICENSE_MOLFILE'
+  summary: 'LAMMPS stands for Large-scale Atomic/Molecular Massively Parallel Simulator.'
+
+  description: |
+    LAMMPS is a classical molecular dynamics simulation code designed to
+    run efficiently on parallel computers.  It was developed at Sandia
+    National Laboratories, a US Department of Energy facility, with
+    funding from the DOE.  It is an open-source code, distributed freely
+    under the terms of the GNU Public License (GPL).
+  doc_url: http://lammps.sandia.gov/doc/Manual.html
+  dev_url: https://github.com/lammps/lammps
+
+extra:
+  recipe-maintainers:
+   -  lasergyro
