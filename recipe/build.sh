@@ -1,9 +1,5 @@
 #!/bin/bash
 
-BUILD_DIR=${SRC_DIR}/build
-mkdir ${BUILD_DIR}
-cd ${BUILD_DIR}
-
 # MOLFILE_INCLUDE_DIR=$PREFIX/lib/plugins/include
 # if [ ! -d $MOLFILE_INCLUDE_DIR ]; then
 #     exit 1
