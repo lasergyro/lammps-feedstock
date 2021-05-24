@@ -42,3 +42,9 @@ $SRC_DIR/cmake
 make -j$(nproc)
 
 make install
+# cp lmp $PREFIX/bin/lmp
+# mkdir -p $PREFIX/include/lammps
+# cp ${SRC_DIR}/src/library.h $PREFIX/include/lammps
+# cp liblammps${SHLIB_EXT}* "${PREFIX}"/lib/
+
+# make install-python

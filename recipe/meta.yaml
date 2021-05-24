@@ -1,10 +1,11 @@
 
-{% set build = 2 %}
+{% set build = 7 %}
 {% set name = "lammps" %}
-{% set version = "stable_29Oct2020" %}
-{% set sha256 = "759705e16c1fedd6aa6e07d028cc0c78d73c76b76736668420946a74050c3726" %}
-{% set date = datetime.datetime.strptime(version.split('_')[1], "%d%b%Y") %}
-{% set conda_version = "{:%Y.%m.%d}".format(date) %}
+{% set lammps_version = "stable_29Oct2020" %}
+{% set opts_version = "1" %}
+{% set lammps_sha256 = "759705e16c1fedd6aa6e07d028cc0c78d73c76b76736668420946a74050c3726" %}
+{% set lammps_date = datetime.datetime.strptime(lammps_version.split('_')[1], "%d%b%Y") %}
+{% set conda_version = "{:%Y.%m.%d}.{}".format(lammps_date,opts_version) %}
 
 package:
   name: {{ name|lower }}
@@ -12,8 +13,10 @@ package:
 
 source:
   - fn: {{ name }}-{{ conda_version }}.tar.gz
-    url: https://github.com/lammps/lammps/archive/{{ version }}.tar.gz
-    sha256: {{ sha256 }}
+    url: https://github.com/lammps/lammps/archive/{{ lammps_version }}.tar.gz
+    sha256: {{ lammps_sha256 }}
+  - patches:
+      - bond_cutoff_warn_once.patch
 
 build:
   number: {{ build }}
@@ -24,26 +27,34 @@ requirements:
     - {{ compiler('c') }}
     - {{ compiler('cxx') }}
     - cmake
+    - make
+    - llvm-openmp  # [osx]
+    - libgomp      # [linux]
 
   host:
     - python
     - openmpi
-    - llvm-openmp
-    - libpng
-    - zlib
     - libnetcdf
+    - zlib
+    - libpng
+
   run:
     - python
     - openmpi
     - mpi4py
 
 test:
+  requires:
+    - openssh
   imports:
     - lammps
+  files:
+    - test_bondcutoff_warn_once.sh
   commands:
     - python -c "from lammps import lammps; lmp=lammps();"
-    - lmp -help > help.txt
-    - mpiexec -n 1 lmp -help > help_mpi.txt
+    - lmp -help | tee help.txt
+    - echo info configuration | mpiexec -np 1 lmp | tee info_configuration_mpi.txt
+    - ./test_bondcutoff_warn_once.sh
 
 about:
   home: http://lammps.sandia.gov
