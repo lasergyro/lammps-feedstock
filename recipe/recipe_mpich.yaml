@@ -28,17 +28,17 @@ requirements:
     - make
     - sel(osx): llvm-openmp
     - sel(linux): libgomp
-    - openmpi
+    - mpich
     - zlib
     - libpng
     - libnetcdf
   host:
     - python
-    - openmpi
+    - mpich
 
   run:
     - python
-    - openmpi
+    - mpich
     - mpi4py
 
 test:
