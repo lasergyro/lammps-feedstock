@@ -1,22 +1,10 @@
 #!/bin/bash
 
-# MOLFILE_INCLUDE_DIR=$PREFIX/lib/plugins/include
-# if [ ! -d $MOLFILE_INCLUDE_DIR ]; then
-#     exit 1
-# fi
-# MOLFILE_PLUGINS_DIR=$PREFIX/lib/plugins/LINUXAMD64/molfile/
-# if [ ! -e $MOLFILE_PLUGINS_DIR ]; then
-#     exit 1
-# fi
-# cp -r $MOLFILE_PLUGINS_DIR $PREFIX/lib/molfile
-# -D PKG_USER-MOLFILE=yes \
-# -D MOLFILE_INCLUDE_DIR="$MOLFILE_INCLUDE_DIR" \
+export LDFLAGS="-lmpi -fopenmp $LDFLAGS"
 
 BUILD_DIR=${SRC_DIR}/build
 mkdir ${BUILD_DIR}
 cd ${BUILD_DIR}
-
-CMAKE_PLATFORM_FLAGS+=(-DCMAKE_TOOLCHAIN_FILE="${RECIPE_DIR}/cross-linux.cmake")
 
 cmake \
 -D BUILD_MPI=yes \
@@ -28,23 +16,15 @@ cmake \
 -D WITH_PNG=yes \
 -D WITH_FFMPEG=no \
 -D WITH_GZIP=no \
--D PKG_USER-OMP=yes \
 -D PKG_OPT=yes \
--D PKG_USER-NETCDF=yes \
+-D PKG_NETCDF=yes \
+-D PKG_OPENMP=yes \
 -D PKG_MISC=yes \
--D PKG_USER-MISC=yes \
 -D PKG_MOLECULE=yes \
 -D PKG_RIGID=yes \
 -D CMAKE_INSTALL_PREFIX=${PREFIX} \
-${CMAKE_PLATFORM_FLAGS[@]} \
 $SRC_DIR/cmake
 
 make -j$(nproc)
 
 make install
-# cp lmp $PREFIX/bin/lmp
-# mkdir -p $PREFIX/include/lammps
-# cp ${SRC_DIR}/src/library.h $PREFIX/include/lammps
-# cp liblammps${SHLIB_EXT}* "${PREFIX}"/lib/
-
-# make install-python

@@ -1,15 +1,13 @@
 diff --git a/src/comm.cpp b/src/comm.cpp
-index 77d1ade14..3689c6311 100644
+index f79c48a..1f2561c 100644
 --- a/src/comm.cpp
 +++ b/src/comm.cpp
-@@ -663,7 +663,9 @@ double Comm::get_comm_cutoff()
+@@ -726,7 +726,7 @@ double Comm::get_comm_cutoff()
    if (!force->pair && (cutghostuser == 0.0)) {
      maxcommcutoff = MAX(maxcommcutoff,maxbondcutoff);
    } else {
 -    if ((me == 0) && (maxbondcutoff > maxcommcutoff))
-+    if ((me == 0) 
-+      && ( update->setupflag == 1 || cutghostuser == 0.0 )
-+      && ( maxbondcutoff > maxcommcutoff ) )
-       error->warning(FLERR,fmt::format("Communication cutoff {} is shorter "
-                                        "than a bond length based estimate of "
-                                        "{}. This may lead to errors.",
++  if ((me == 0) && ( update->setupflag == 1 || cutghostuser == 0.0 ) && (maxbondcutoff > maxcommcutoff) )
+       error->warning(FLERR,"Communication cutoff {} is shorter than a bond "
+                      "length based estimate of {}. This may lead to errors.",
+                      maxcommcutoff,maxbondcutoff);

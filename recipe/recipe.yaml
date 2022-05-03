@@ -1,42 +1,41 @@
-
-{% set build = 7 %}
-{% set name = "lammps" %}
-{% set lammps_version = "stable_29Oct2020" %}
-{% set opts_version = "1" %}
-{% set lammps_sha256 = "759705e16c1fedd6aa6e07d028cc0c78d73c76b76736668420946a74050c3726" %}
-{% set lammps_date = datetime.datetime.strptime(lammps_version.split('_')[1], "%d%b%Y") %}
-{% set conda_version = "{:%Y.%m.%d}.{}".format(lammps_date,opts_version) %}
+context:
+  name: lammps
+  lammps_version: stable_29Sep2021_update3
+  lammps_sha256: e4c274f0dc5fdedc43f2b365156653d1105197a116ff2bafe893523cdb22532e
+  conda_version: 2021.09.29u3
 
 package:
-  name: {{ name|lower }}
-  version: {{ conda_version }}
+  name: '{{ name|lower }}'
+  version: '{{ conda_version }}'
 
 source:
-  - fn: {{ name }}-{{ conda_version }}.tar.gz
+  - fn: '{{ name }}-{{ conda_version }}.tar.gz'
     url: https://github.com/lammps/lammps/archive/{{ lammps_version }}.tar.gz
-    sha256: {{ lammps_sha256 }}
+    sha256: '{{ lammps_sha256 }}'
   - patches:
       - bond_cutoff_warn_once.patch
 
 build:
-  number: {{ build }}
-  string: py{{ CONDA_PY }}h{{ PKG_HASH }}_{{ build }}
+  number: 3
+  ignore_run_exports:
+    - zlib
 
 requirements:
   build:
-    - {{ compiler('c') }}
-    - {{ compiler('cxx') }}
+    - '{{ compiler("c") }}'
+    - '{{ compiler("cxx") }}'
     - cmake
     - make
-    - llvm-openmp  # [osx]
-    - libgomp      # [linux]
-
+    - sel(osx): llvm-openmp
+    - sel(linux): libgomp
+    - openmpi
+    - zlib
+    - libpng
+    - libnetcdf
+    # - ffmpeg
   host:
     - python
     - openmpi
-    - libnetcdf
-    - zlib
-    - libpng
 
   run:
     - python
@@ -60,10 +59,8 @@ about:
   home: http://lammps.sandia.gov
   license: GPL-2.0
   license_family: GPL
-  license_file: 
-    - '{{ environ["RECIPE_DIR"] }}/LICENSE'
-    - '{{ environ["RECIPE_DIR"] }}/LICENSE_MOLFILE'
-  summary: 'LAMMPS stands for Large-scale Atomic/Molecular Massively Parallel Simulator.'
+  license_file: licenses/
+  summary: LAMMPS stands for Large-scale Atomic/Molecular Massively Parallel Simulator.
 
   description: |
     LAMMPS is a classical molecular dynamics simulation code designed to
@@ -76,4 +73,5 @@ about:
 
 extra:
   recipe-maintainers:
-   -  lasergyro
+    - lasergyro
+
