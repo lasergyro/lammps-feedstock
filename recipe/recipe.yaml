@@ -26,20 +26,12 @@ requirements:
     - '{{ compiler("cxx") }}'
     - cmake
     - make
-    - sel(osx): llvm-openmp
-    - sel(linux): libgomp
-    - openmpi
     - zlib
     - libpng
-    - libnetcdf
   host:
     - python
-    - openmpi
-
   run:
     - python
-    - openmpi
-    - mpi4py
 
 test:
   requires:
@@ -70,7 +62,46 @@ about:
   doc_url: http://lammps.sandia.gov/doc/Manual.html
   dev_url: https://github.com/lammps/lammps
 
+
+features:
+  - name: openmpi
+    default: false
+    requirements:
+      build:
+        - openmpi
+      host:
+        - openmpi
+      run:
+        - openmpi
+        - mpi4py
+
+  - name: mpich
+    default: false
+    requirements:
+      build:
+        - mpich
+      host:
+        - mpich
+      run:
+        - mpich
+        - mpi4py
+  - name: openmp
+    default: true
+    requirements:
+      build:
+        - sel(osx): llvm-openmp
+        - sel(linux): libgomp
+  - name: opt
+    default: true
+  - name: netcdf
+    default: true
+    requirements:
+      build:
+        - libnetcdf
+  - name: extra-pair
+    default: true
+
 extra:
   recipe-maintainers:
-    - lasergyro
+   - lasergyro
 
